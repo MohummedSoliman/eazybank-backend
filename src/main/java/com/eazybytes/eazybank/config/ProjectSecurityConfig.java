@@ -41,15 +41,20 @@ public class ProjectSecurityConfig {
 //        return  new InMemoryUserDetailsManager(admin, user);
 //    }
 //
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource){
-        return new JdbcUserDetailsManager(dataSource);
-    }
+    /**
+     *  This for use default  tables name for saving users.
+     * @return
+     */
+//    @Bean
+//    public UserDetailsService userDetailsService(DataSource dataSource){
+//        return new JdbcUserDetailsManager(dataSource);
+//    }
 
 
 }
