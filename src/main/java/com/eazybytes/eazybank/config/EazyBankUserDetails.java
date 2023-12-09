@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+/**
+ * I  Comment this annotation so i no longer using this class
+ * after creating custom provider
+ * @Link com.eazybytes.eazybank.config.EazybankUsernamePasswordAuthenticationProvider
+ */
+//@Service
 public class EazyBankUserDetails implements UserDetailsService {
 
     @Autowired
