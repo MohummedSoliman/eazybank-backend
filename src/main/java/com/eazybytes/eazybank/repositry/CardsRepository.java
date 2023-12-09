@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CardsRepository extends CrudRepository<Cards, Integer> {
-    List<Cards> findByCustomerId(int customerId);
+    List<Cards> findByCostomerId(int customerId);
 }
