@@ -1,5 +1,6 @@
 package com.eazybytes.eazybank.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -8,6 +9,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 public class ProjectSecurityConfig {
@@ -15,6 +20,18 @@ public class ProjectSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFIlterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(Collections.singletonList("http://172.17.0.2:4200"));
+                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowCredentials(true);
+                        config.setAllowedHeaders(Collections.singletonList("*"));
+                        config.setMaxAge(3600L);
+                        return config;
+                    }
+                }))
                 .authorizeHttpRequests((requests) ->
                         requests
                                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards","/user").authenticated()
@@ -24,37 +41,9 @@ public class ProjectSecurityConfig {
         return http.build();
     }
 
-    /**
-     * Can use withDefaultPasswordEncoder() method directly this is one Option
-     * Can  create bean of PasswordEncoder .
-     */
-//    @Bean
-//    public InMemoryUserDetailsManager userDetailsManager() {
-//
-//        UserDetails admin = User.withUsername("admin").password("123").authorities("admin").build();
-//        UserDetails user = User.withUsername("user").password("123").authorities("read").build();
-//        return  new InMemoryUserDetailsManager(admin, user);
-//    }
-//
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder(){
-//        return NoOpPasswordEncoder.getInstance();
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-    /**
-     *  This for use default  tables name for saving users.
-     * @return
-     */
-//    @Bean
-//    public UserDetailsService userDetailsService(DataSource dataSource){
-//        return new JdbcUserDetailsManager(dataSource);
-//    }
-
 
 }
