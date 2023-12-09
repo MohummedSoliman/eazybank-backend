@@ -22,7 +22,7 @@ public class Customer {
     private String pwd;
     private String role;
     @Column(name = "create_dt")
-    private LocalDateTime createDt;
+    private String  createDt;
 
     public int getId() {
         return id;
@@ -72,11 +72,11 @@ public class Customer {
         this.mobileNumber = mobileNumber;
     }
 
-    public LocalDateTime getCreateDt() {
+    public String  getCreateDt() {
         return createDt;
     }
 
-    public void setCreateDt(LocalDateTime createDt) {
+    public void setCreateDt(String createDt) {
         this.createDt = createDt;
     }
 }
