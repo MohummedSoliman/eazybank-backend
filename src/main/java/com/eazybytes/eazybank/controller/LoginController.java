@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,6 +31,7 @@ public class LoginController {
 
         String hashPwd = passwordEncoder.encode(customer.getPwd());
         customer.setPwd(hashPwd);
+        customer.setCreateDt(new Date(System.currentTimeMillis()).toString());
         savedCustomer = customerRepository.save(customer);
         if(savedCustomer.getId() > 0){
             response = ResponseEntity
