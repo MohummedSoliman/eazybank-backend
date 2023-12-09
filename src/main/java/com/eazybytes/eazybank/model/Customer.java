@@ -1,10 +1,12 @@
 package com.eazybytes.eazybank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 public class Customer {
@@ -22,7 +24,10 @@ public class Customer {
     private String pwd;
     private String role;
     @Column(name = "create_dt")
-    private String  createDt;
+    private String createDt;
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private Set<Authority> authorities;
 
     public int getId() {
         return id;
@@ -72,11 +77,19 @@ public class Customer {
         this.mobileNumber = mobileNumber;
     }
 
-    public String  getCreateDt() {
+    public String getCreateDt() {
         return createDt;
     }
 
     public void setCreateDt(String createDt) {
         this.createDt = createDt;
+    }
+
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
     }
 }
