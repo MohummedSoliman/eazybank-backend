@@ -1,10 +1,10 @@
 package com.eazybytes.eazybank.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Customer {
@@ -12,10 +12,17 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native")
+    @Column(name = "customer_id")
     private int id;
+    private String name;
     private String email;
+    @Column(name = "mobile_number")
+    private String mobileNumber;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String pwd;
     private String role;
+    @Column(name = "create_dt")
+    private LocalDateTime createDt;
 
     public int getId() {
         return id;
@@ -47,5 +54,29 @@ public class Customer {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public LocalDateTime getCreateDt() {
+        return createDt;
+    }
+
+    public void setCreateDt(LocalDateTime createDt) {
+        this.createDt = createDt;
     }
 }
