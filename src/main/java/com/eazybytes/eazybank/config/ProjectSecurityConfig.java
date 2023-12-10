@@ -28,7 +28,9 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFIlterChain(HttpSecurity http) throws Exception {
-        http.securityContext(security -> security.requireExplicitSave(false))
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName("_csrf");
+        http.securityContext((context) -> context.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -41,24 +43,19 @@ public class ProjectSecurityConfig {
                         config.setMaxAge(3600L);
                         return config;
                     }
-                }))
-                .csrf(csrf -> {
-                    csrf.csrfTokenRequestHandler(requestHandler).
-                            ignoringRequestMatchers("/contact", "/register")
-                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                })
+                })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/contact","/register")
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((requests) ->
-                        requests
-                                .requestMatchers("/myAccount").hasRole("USER")
-                                .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers("/myLoans").hasRole("USER")
-                                .requestMatchers("/myCards").hasRole("USER")
-                                .requestMatchers("/user").authenticated()
-                                .requestMatchers("/notices", "/contact", "/register").permitAll())
+                .authorizeHttpRequests((requests)->requests
+                        .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
+                        .requestMatchers("/myBalance").hasAnyAuthority("VIEWBALANCE","ADMIN")
+                        .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
+                        .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
+                        .requestMatchers("/user").authenticated()
+                        .requestMatchers("/notices","/contact","/register").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
