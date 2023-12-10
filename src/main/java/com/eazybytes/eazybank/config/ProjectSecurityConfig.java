@@ -2,12 +2,14 @@ package com.eazybytes.eazybank.config;
 
 import com.eazybytes.eazybank.filter.AuthoritiesLoggingAfterFilter;
 import com.eazybytes.eazybank.filter.AuthoritiesLoggingAtFilter;
+import com.eazybytes.eazybank.filter.CsrfCookieFilter;
 import com.eazybytes.eazybank.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,10 +28,12 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFIlterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> {
-            csrf.csrfTokenRequestHandler(requestHandler).
-                    ignoringRequestMatchers("/contact", "/register")
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.securityContext(security -> security.requireExplicitSave(false))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .csrf(csrf -> {
+                    csrf.csrfTokenRequestHandler(requestHandler).
+                            ignoringRequestMatchers("/contact", "/register")
+                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 })
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -43,6 +47,7 @@ public class ProjectSecurityConfig {
                         return config;
                     }
                 }))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
@@ -52,7 +57,7 @@ public class ProjectSecurityConfig {
                                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/myLoans").hasRole("USER")
                                 .requestMatchers("/myCards").hasRole("USER")
-                                .requestMatchers( "/user").authenticated()
+                                .requestMatchers("/user").authenticated()
                                 .requestMatchers("/notices", "/contact", "/register").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
@@ -60,7 +65,7 @@ public class ProjectSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
