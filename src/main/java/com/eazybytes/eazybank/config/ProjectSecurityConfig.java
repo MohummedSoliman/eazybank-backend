@@ -1,9 +1,6 @@
 package com.eazybytes.eazybank.config;
 
-import com.eazybytes.eazybank.filter.AuthoritiesLoggingAfterFilter;
-import com.eazybytes.eazybank.filter.AuthoritiesLoggingAtFilter;
-import com.eazybytes.eazybank.filter.CsrfCookieFilter;
-import com.eazybytes.eazybank.filter.RequestValidationBeforeFilter;
+import com.eazybytes.eazybank.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +47,7 @@ public class ProjectSecurityConfig {
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGenerationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests)->requests
                         .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
                         .requestMatchers("/myBalance").hasAnyAuthority("VIEWBALANCE","ADMIN")
