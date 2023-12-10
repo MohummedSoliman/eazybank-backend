@@ -1,5 +1,6 @@
 package com.eazybytes.eazybank.config;
 
+import com.eazybytes.eazybank.filter.AuthoritiesLoggingAfterFilter;
 import com.eazybytes.eazybank.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ public class ProjectSecurityConfig {
                     }
                 }))
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) ->
                         requests
                                 .requestMatchers("/myAccount").hasRole("USER")
