@@ -26,7 +26,7 @@ public class Customer {
     @Column(name = "create_dt")
     private String createDt;
     @JsonIgnore
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private Set<Authority> authorities;
 
     public int getId() {
