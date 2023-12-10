@@ -30,11 +30,6 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFIlterChain(HttpSecurity http) throws Exception {
         http.securityContext(security -> security.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-                .csrf(csrf -> {
-                    csrf.csrfTokenRequestHandler(requestHandler).
-                            ignoringRequestMatchers("/contact", "/register")
-                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                })
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -47,6 +42,11 @@ public class ProjectSecurityConfig {
                         return config;
                     }
                 }))
+                .csrf(csrf -> {
+                    csrf.csrfTokenRequestHandler(requestHandler).
+                            ignoringRequestMatchers("/contact", "/register")
+                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                })
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
